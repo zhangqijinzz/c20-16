@@ -11,7 +11,7 @@ import {
   type WorkspaceStatus,
 } from '../../shared/models'
 import { clampDeskSize, clampItemDimension } from '../../shared/layoutRules'
-import { moveCanvasItem, rotateCanvasItem } from '../canvas/canvasViewModel'
+import { moveCanvasItem, recoverCanvasItem, rotateCanvasItem } from '../canvas/canvasViewModel'
 import { createMaterialDraft } from '../materials/materialsViewModel'
 import { inspectPlan } from '../inspection/inspectionViewModel'
 import { LocalWorkspaceRepository, type WorkspaceRepository } from './workspaceRepository'
@@ -30,6 +30,7 @@ export interface WorkspaceViewModel {
   addItem: (type: DeviceType) => void
   removeItem: (id: string) => void
   moveItem: (id: string, x: number, y: number) => void
+  recoverItem: (id: string) => void
   rotateItem: (id: string, delta: number) => void
   updateItem: (id: string, patch: Partial<Pick<DeskItem, 'widthMm' | 'heightMm' | 'x' | 'y'>>) => void
   updateDesk: (field: 'deskWidthMm' | 'deskHeightMm', value: number) => void
@@ -114,6 +115,11 @@ export function useWorkspaceViewModel(repository?: WorkspaceRepository): Workspa
     updateActivePlan((plan) => ({ ...plan, items: moveCanvasItem(plan.items, id, x, y) }), '位置已更新')
   }, [updateActivePlan])
 
+  const recoverItem = useCallback((id: string) => {
+    updateActivePlan((plan) => ({ ...plan, items: recoverCanvasItem(plan.items, id, plan) }), '设备已移回桌面')
+    setSelectedItemId(id)
+  }, [updateActivePlan])
+
   const rotateItem = useCallback((id: string, delta: number) => {
     updateActivePlan((plan) => ({ ...plan, items: rotateCanvasItem(plan.items, id, delta) }), '角度已更新')
   }, [updateActivePlan])
@@ -188,6 +194,7 @@ export function useWorkspaceViewModel(repository?: WorkspaceRepository): Workspa
     addItem,
     removeItem,
     moveItem,
+    recoverItem,
     rotateItem,
     updateItem,
     updateDesk,

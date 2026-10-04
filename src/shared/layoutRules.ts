@@ -65,6 +65,37 @@ export function analyzeLayout(plan: WorkspacePlan): LayoutAnalysis {
   }
 }
 
+export function isItemOutOfBounds(item: DeskItem, plan: WorkspacePlan): boolean {
+  const bounds = getItemBounds(item)
+  return bounds.left < 0 || bounds.top < 0 || bounds.right > plan.deskWidthMm || bounds.bottom > plan.deskHeightMm
+}
+
+/**
+ * 计算把设备移回桌面内所需的最小位移。
+ * 设备比桌面还大时沿该轴居中；位置本身是合法数值时保持原样。
+ */
+export function getRecoveredPosition(item: DeskItem, plan: WorkspacePlan): { x: number; y: number } {
+  const bounds = getItemBounds(item)
+  let x = item.x
+  let y = item.y
+
+  if (bounds.width <= plan.deskWidthMm) {
+    if (bounds.left < 0) x += -bounds.left
+    else if (bounds.right > plan.deskWidthMm) x -= bounds.right - plan.deskWidthMm
+  } else {
+    x = (plan.deskWidthMm - item.widthMm) / 2
+  }
+
+  if (bounds.height <= plan.deskHeightMm) {
+    if (bounds.top < 0) y += -bounds.top
+    else if (bounds.bottom > plan.deskHeightMm) y -= bounds.bottom - plan.deskHeightMm
+  } else {
+    y = (plan.deskHeightMm - item.heightMm) / 2
+  }
+
+  return { x, y }
+}
+
 export function clampDeskSize(value: number, fallback: number): number {
   if (!Number.isFinite(value)) return fallback
   return Math.min(4000, Math.max(600, Math.round(value)))

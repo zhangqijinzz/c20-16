@@ -30,3 +30,19 @@ button { cursor: pointer; }
 @media (max-width: 1180px) { .editor-grid { grid-template-columns: 190px minmax(320px, 1fr); }.inspector-panel { grid-column: 1 / -1; }.item-editor { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }.item-editor > .field-heading, .item-editor > .selected-item-heading, .item-editor > .issue-callout, .item-editor > .remove-item-button { grid-column: 1 / -1; }.item-editor > .field-heading { margin-top: 0; }.desk-size-card { margin-bottom: 0; } }
 @media (max-width: 800px) { .plans-sidebar { width: 185px; flex-basis: 185px; }.topbar { padding: 0 20px; }.workspace-content { padding: 28px 20px 40px; }.page-heading { display: block; }.feedback-chip { margin-top: 18px; max-width: none; }.metrics-row { grid-template-columns: repeat(2, 1fr); }.editor-grid { grid-template-columns: 1fr; }.palette-panel { order: 2; }.stage-panel { order: 1; }.inspector-panel { order: 3; grid-column: auto; }.device-list { grid-template-columns: repeat(2, 1fr); }.palette-tip { display: none; } }
 @media (max-width: 560px) { .app-shell { display: block; }.plans-sidebar { width: auto; padding: 14px 15px; }.brand-lockup { padding: 0 4px 14px; }.sidebar-label, .plan-list, .new-plan-button, .sidebar-footer { display: none; }.topbar { height: 58px; padding: 0 15px; }.breadcrumb { font-size: 10px; }.topbar-actions { gap: 8px; }.save-state { display: none; }.preview-button { padding: 8px; font-size: 0; }.workspace-content { padding: 24px 15px 30px; }.page-heading h1 { font-size: 26px; }.metrics-row { gap: 8px; margin-top: 22px; }.metric-card, .coverage-card { min-height: 94px; padding: 13px; }.metric-card strong, .coverage-card strong { font-size: 18px; }.metrics-row { grid-template-columns: 1fr 1fr; }.stage-header { padding: 15px; }.canvas-wrap { padding: 8px; }.canvas-toolbar { font-size: 8px; }.canvas-legend { gap: 9px; font-size: 8px; }.item-editor { display: block; }.item-editor > .field-heading { margin-top: 19px; }.inspector-panel { padding: 16px; } }
+.canvas-stage { position: relative; }
+.desk-canvas { overflow: visible; }
+.desk-item.is-out-of-bounds .item-inner-line { stroke: #ef6a6a; stroke-width: 3; stroke-dasharray: 9 5; }
+.escape-marker { position: absolute; z-index: 3; display: flex; align-items: center; gap: 4px; transform: translate(-50%, -50%); pointer-events: none; }
+.escape-marker.marker-left { transform: translate(0, -50%); }
+.escape-marker.marker-right { transform: translate(-100%, -50%); }
+.escape-marker.marker-top { transform: translate(-50%, 0); }
+.escape-marker.marker-bottom { transform: translate(-50%, -100%); }
+.escape-marker-chip, .escape-marker-recover { display: inline-flex; align-items: center; gap: 4px; pointer-events: auto; border: 1px solid rgba(206, 92, 92, .55); border-radius: 20px; box-shadow: 0 6px 16px rgba(150, 46, 46, .22); cursor: pointer; }
+.escape-marker-chip { padding: 5px 10px; color: #fff; background: #ef6a6a; font-size: 10px; font-weight: 600; white-space: nowrap; }
+.escape-marker-chip:hover { background: #e75555; }
+.escape-marker-recover { justify-content: center; width: 24px; height: 24px; padding: 0; color: #c56b6b; background: #fff; }
+.escape-marker-recover:hover { color: #a94a4a; background: #fff0ef; }
+.escape-marker.is-selected .escape-marker-chip { outline: 2px solid #5478bd; outline-offset: 2px; }
+.recover-item-button { display: flex; justify-content: center; align-items: center; gap: 6px; width: 100%; margin: 0 0 14px; padding: 9px; border: 0; border-radius: 7px; color: #4464a4; background: #eef3fd; font-size: 10px; }
+.recover-item-button:hover { background: #e0e9fb; }
