@@ -11,7 +11,7 @@ import {
   type WorkspaceStatus,
 } from '../../shared/models'
 import { clampDeskSize, clampItemDimension } from '../../shared/layoutRules'
-import { moveCanvasItem, rotateCanvasItem } from '../canvas/canvasViewModel'
+import { moveCanvasItem, recoverCanvasItem, rotateCanvasItem } from '../canvas/canvasViewModel'
 import { createMaterialDraft } from '../materials/materialsViewModel'
 import { inspectPlan } from '../inspection/inspectionViewModel'
 import { LocalWorkspaceRepository, type WorkspaceRepository } from './workspaceRepository'
@@ -30,6 +30,7 @@ export interface WorkspaceViewModel {
   addItem: (type: DeviceType) => void
   removeItem: (id: string) => void
   moveItem: (id: string, x: number, y: number) => void
+  recoverItem: (id: string) => void
   rotateItem: (id: string, delta: number) => void
   updateItem: (id: string, patch: Partial<Pick<DeskItem, 'widthMm' | 'heightMm' | 'x' | 'y'>>) => void
   updateDesk: (field: 'deskWidthMm' | 'deskHeightMm', value: number) => void
@@ -114,6 +115,14 @@ export function useWorkspaceViewModel(repository?: WorkspaceRepository): Workspa
     updateActivePlan((plan) => ({ ...plan, items: moveCanvasItem(plan.items, id, x, y) }), '位置已更新')
   }, [updateActivePlan])
 
+  const recoverItem = useCallback((id: string) => {
+    if (!activePlan) return
+    updateActivePlan(
+      (plan) => ({ ...plan, items: recoverCanvasItem(plan.items, id, plan.deskWidthMm, plan.deskHeightMm) }),
+      '设备已拉回桌面',
+    )
+  }, [activePlan, updateActivePlan])
+
   const rotateItem = useCallback((id: string, delta: number) => {
     updateActivePlan((plan) => ({ ...plan, items: rotateCanvasItem(plan.items, id, delta) }), '角度已更新')
   }, [updateActivePlan])
@@ -126,6 +135,8 @@ export function useWorkspaceViewModel(repository?: WorkspaceRepository): Workspa
         ...patch,
         widthMm: patch.widthMm === undefined ? item.widthMm : clampItemDimension(patch.widthMm, item.widthMm),
         heightMm: patch.heightMm === undefined ? item.heightMm : clampItemDimension(patch.heightMm, item.heightMm),
+        x: patch.x === undefined ? item.x : (Number.isFinite(patch.x) ? patch.x : item.x),
+        y: patch.y === undefined ? item.y : (Number.isFinite(patch.y) ? patch.y : item.y),
       } : item),
     }), '尺寸参数已更新')
   }, [updateActivePlan])
@@ -188,6 +199,7 @@ export function useWorkspaceViewModel(repository?: WorkspaceRepository): Workspa
     addItem,
     removeItem,
     moveItem,
+    recoverItem,
     rotateItem,
     updateItem,
     updateDesk,

@@ -1,4 +1,4 @@
-import { AlertTriangle, Crosshair, RotateCcw, RotateCw, Ruler, Trash2 } from 'lucide-react'
+import { AlertTriangle, Crosshair, RotateCcw, RotateCw, Ruler, Trash2, Undo2 } from 'lucide-react'
 import type { DeskItem, WorkspacePlan } from '../../../shared/models'
 import { getDeviceDefinition } from '../../../shared/models'
 
@@ -6,18 +6,21 @@ interface InspectorPanelProps {
   plan: WorkspacePlan
   item: DeskItem | null
   issueIds: string[]
+  outOfBoundsIds?: string[]
   onUpdateDesk: (field: 'deskWidthMm' | 'deskHeightMm', value: number) => void
   onUpdateItem: (id: string, patch: Partial<Pick<DeskItem, 'widthMm' | 'heightMm' | 'x' | 'y'>>) => void
   onRotate: (id: string, delta: number) => void
   onDelete: (id: string) => void
+  onRecoverItem?: (id: string) => void
 }
 
 function NumericField({ label, value, onChange }: { label: string; value: number; onChange: (value: number) => void }) {
   return <label className="numeric-field"><span>{label}</span><input type="number" value={value} min={40} onChange={(event) => onChange(event.currentTarget.valueAsNumber)} /><em>mm</em></label>
 }
 
-export function InspectorPanel({ plan, item, issueIds, onUpdateDesk, onUpdateItem, onRotate, onDelete }: InspectorPanelProps) {
+export function InspectorPanel({ plan, item, issueIds, outOfBoundsIds = [], onUpdateDesk, onUpdateItem, onRotate, onDelete, onRecoverItem }: InspectorPanelProps) {
   const isIssue = item ? issueIds.includes(item.id) : false
+  const isOutOfBounds = item ? outOfBoundsIds.includes(item.id) : false
   const definition = item ? getDeviceDefinition(item.type) : null
   return (
     <aside className="inspector-panel">
@@ -36,7 +39,10 @@ export function InspectorPanel({ plan, item, issueIds, onUpdateDesk, onUpdateIte
       {item && definition ? (
         <div className="item-editor">
           <div className="selected-item-heading"><span className="selected-swatch" style={{ backgroundColor: definition.color }} /> <div><strong>{definition.label}</strong><small>{definition.hint}</small></div><span className="item-code">{definition.shortLabel}</span></div>
-          {isIssue && <div className="issue-callout"><AlertTriangle size={16} /><span>设备与其他元素重叠或超出桌面边界</span></div>}
+          {isIssue && <div className="issue-callout"><AlertTriangle size={16} /><span>{isOutOfBounds ? '设备已经超出桌面边界' : '设备与其他元素存在重叠'}</span></div>}
+          {isOutOfBounds && onRecoverItem && item && (
+            <button className="recover-item-button" onClick={() => onRecoverItem(item.id)} type="button"><Undo2 size={14} /> 一键拉回桌面内</button>
+          )}
           <div className="field-heading"><span>实际尺寸</span><span className="unit-label">单位：毫米</span></div>
           <div className="two-column-fields">
             <NumericField label="宽度" value={item.widthMm} onChange={(value) => onUpdateItem(item.id, { widthMm: value })} />

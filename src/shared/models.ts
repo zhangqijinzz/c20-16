@@ -36,6 +36,8 @@ export interface ItemBounds {
   height: number
 }
 
+export type EscapeEdge = 'left' | 'right' | 'top' | 'bottom' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+
 export interface LayoutAnalysis {
   overlapIds: string[]
   outOfBoundsIds: string[]
